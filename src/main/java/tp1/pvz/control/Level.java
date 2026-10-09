@@ -9,8 +9,10 @@ package tp1.pvz.control;
  * a game.
  */
 public enum Level {
+	EASY(3, 0.1),                                                                            
+  	HARD(5, 0.2),                                                                            
+  	INSANE(10, 0.3);  
 
-	// TODO fill your code
 
 	private int numberOfZombies;
 	
@@ -21,8 +23,14 @@ public enum Level {
 		this.zombieFrequency = zombieFrequency;
 	}
 
-	// TODO fill your code
-
+	  public int getNumberOfZombies() {                                                        
+      return this.numberOfZombies;                                                         
+    }                                                                                        
+                                                                                           
+  	public double getZombieFrequency() {                                                     
+      return this.zombieFrequency;                                                         
+    }                                                                                        
+           
 	/**
 	 * Parse a string and return any matching level
 	 * 

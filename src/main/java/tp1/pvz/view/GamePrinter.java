@@ -34,13 +34,13 @@ public class GamePrinter implements GameView {
 
 	private static final int MARGIN_SIZE = 2;
 
-	private static final String MARGIN = repeat(SPACE, MARGIN_SIZE);
+	private static final String MARGIN = StringUtils.repeat(SPACE, MARGIN_SIZE);
 
 	private static final int CELL_SIZE = 8;
 
-	private static final String CELL_BORDER = repeat(CELL_BORDER_CHAR, CELL_SIZE);
+	private static final String CELL_BORDER = StringUtils.repeat(CELL_BORDER_CHAR, CELL_SIZE);
 
-	private static final String ROW_BORDER = SPACE + repeat(CELL_BORDER + SPACE, Game.NUM_COLS);
+	private static final String ROW_BORDER = SPACE + StringUtils.repeat(CELL_BORDER + SPACE, Game.NUM_COLS);
 
 	private static final String INDENTED_ROW_BORDER = String.format("%n%s%s%n", MARGIN, ROW_BORDER);
 
@@ -60,7 +60,9 @@ public class GamePrinter implements GameView {
 	private String getInfo() {
 		StringBuilder buffer = new StringBuilder();
 
-		// TODO fill your code
+		buffer.append(String.format(Messages.NUMBER_OF_CYCLES, game.getCycle()));
+		buffer.append(String.format(Messages.NUMBER_OF_COINS, game.getSunCoins()));
+		buffer.append(String.format(Messages.REMAINING_ZOMBIES, game.getRemainingZombies()));
 
 		return buffer.toString();
 	}
@@ -95,7 +97,14 @@ public class GamePrinter implements GameView {
 	@Override
 	public void showEndMessage() {
 		StringBuilder buffer = new StringBuilder(Messages.GAME_OVER);
-		// TODO fill your code
+		buffer.append(System.lineSeparator());
+		if (game.getPlayerWins()) {
+			buffer.append(Messages.PLAYER_WINS);
+		} else if (game.getZombiesWin()) {
+			buffer.append(Messages.ZOMBIES_WIN);
+		} else if (game.getPlayerQuits()) {
+			buffer.append(Messages.PLAYER_QUITS);
+		}
 		System.out.println(buffer);
 	}
 

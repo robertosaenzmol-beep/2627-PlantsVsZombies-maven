@@ -5,26 +5,14 @@ import java.util.Random;
 import tp1.pvz.control.Level;
 import tp1.pvz.logic.gameobjects.Zombie;
 import tp1.pvz.logic.gameobjects.ZombieList;
+import tp1.pvz.utils.Position;
 
-/**
- * Manages the full lifecycle of zombies for a game session.
- *
- * <p>Responsibilities: deciding each cycle whether to spawn a new zombie
- * (probabilistically, subject to the remaining quota from {@link Level}),
- * delegating per-cycle updates and dead-removal to the underlying
- * {@link ZombieList}, and answering win/loss queries
- *
- */
 public class ZombiesManager {
 
 	private Game game;
-
 	private Level level;
-
 	private Random rand;
-
 	private int remainingZombies;
-
 	private ZombieList zombies;
 
 	public ZombiesManager(Game game, Level level, Random rand) {
@@ -35,24 +23,14 @@ public class ZombiesManager {
 		this.zombies = new ZombieList();
 	}
 
-	/**
-	 * Checks if the game should add (if possible) a zombie to the game.
-	 * 
-	 * @return <code>true</code> if a zombie should be added to the game.
-	 */
 	private boolean shouldAddZombie() {
 		return rand.nextDouble() < level.getZombieFrequency();
 	}
-	
-	/**
-	 * Return a random row within the board limits.
-	 * 
-	 * @return a random row.
-	 */
+
 	private int randomZombieRow() {
 		return rand.nextInt(Game.NUM_ROWS);
 	}
-	
+
 	public boolean addZombie() {
 		int row = randomZombieRow();
 		return addZombie(row);
@@ -62,11 +40,57 @@ public class ZombiesManager {
 		boolean canAdd = getRemainingZombies() > 0 && shouldAddZombie()
 				&& isPositionEmpty(Game.NUM_COLS, row);
 
-		if(canAdd) {
-			// TODO fill your code
+		if (canAdd) {
+			// Zombies spawn outside the board at column NUM_COLS (one past the last visible column)
+			Zombie z = new Zombie(new Position(row, Game.NUM_COLS), this.game);
+			this.zombies.add(z);
+			this.remainingZombies--;
 		}
 		return canAdd;
 	}
 
-	// TODO fill your code
+	public int getRemainingZombies() {
+		return this.remainingZombies;
+	}
+
+	public boolean isPositionEmpty(int col, int row) {
+		return !this.zombies.isPositionOccupied(col, row);
+	}
+
+	public void update() {
+		this.zombies.update();
+	}
+
+	public void removeDead() {
+		this.zombies.removeDead();
+	}
+
+	public boolean hasZombieReachedEnd() {
+		return this.zombies.hasZombieReachedEnd();
+	}
+
+	public boolean hasAliveZombies() {
+		return this.zombies.hasAliveZombies();
+	}
+
+	public Zombie getNearestZombieInRow(int row, int fromCol) {
+		return this.zombies.getNearestZombieInRow(row, fromCol);
+	}
+
+	public boolean isPositionOccupiedByZombie(int col, int row) {
+		return this.zombies.isPositionOccupied(col, row);
+	}
+
+	public String getZombieIconInPosition(int col, int row) {
+		Zombie z = this.zombies.getObjectInPosition(col, row);
+		if (z != null) {
+			return z.getIcon();
+		}
+		return "";
+	}
+
+	public void reset() {
+		this.remainingZombies = this.level.getNumberOfZombies();
+		this.zombies.reset();
+	}
 }
