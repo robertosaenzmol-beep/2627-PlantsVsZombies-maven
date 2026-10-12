@@ -60,8 +60,8 @@ public class GamePrinter implements GameView {
 	private String getInfo() {
 		StringBuilder buffer = new StringBuilder();
 
-		buffer.append(String.format(Messages.NUMBER_OF_CYCLES, game.getCycle()));
-		buffer.append(String.format(Messages.NUMBER_OF_COINS, game.getSunCoins()));
+		buffer.append(String.format(Messages.NUMBER_OF_CYCLES, game.getCycles()));
+		buffer.append(String.format(Messages.NUMBER_OF_COINS, game.getCoins()));
 		buffer.append(String.format(Messages.REMAINING_ZOMBIES, game.getRemainingZombies()));
 
 		return buffer.toString();
@@ -102,7 +102,7 @@ public class GamePrinter implements GameView {
 			buffer.append(Messages.PLAYER_WINS);
 		} else if (game.getZombiesWin()) {
 			buffer.append(Messages.ZOMBIES_WIN);
-		} else if (game.getPlayerQuits()) {
+		} else if (game.playerQuits()) {
 			buffer.append(Messages.PLAYER_QUITS);
 		}
 		System.out.println(buffer);

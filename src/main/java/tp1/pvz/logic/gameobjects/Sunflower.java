@@ -28,6 +28,7 @@ public class Sunflower {
     }
 
     public void update() {
+        if (!isAlive()) return;
         if (this.firstCycle) {
             this.firstCycle = false;
             return;
@@ -48,6 +49,10 @@ public class Sunflower {
 
     public boolean isInPosition(int col, int row) {
         return this.col == col && this.row == row;
+    }
+
+    public boolean isInPosition(Position pos) {
+        return isInPosition(pos.getCol(), pos.getRow());
     }
 
     public int getCol() {

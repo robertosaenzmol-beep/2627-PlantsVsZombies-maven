@@ -71,17 +71,12 @@ public class Game {
 	// --- Plant placement ---
 
 	public boolean addPlant(String plantName, int col, int row) {
-		// Check valid position
 		if (!isInsideBoard(col, row)) {
 			return false;
 		}
-
-		// Check position is empty
 		if (!isPositionEmpty(col, row)) {
 			return false;
 		}
-
-		// Check which plant and if enough coins
 		if (checkGameObject(plantName, "sunflower", "s")) {
 			if (this.sunCoins < Sunflower.COST) {
 				return false;
@@ -97,12 +92,20 @@ public class Game {
 			this.sunCoins -= Peashooter.COST;
 			return true;
 		}
-
 		return false;
+	}
+
+	public boolean addGameObject(String plantName, Position pos) {
+		return addPlant(plantName, pos.getCol(), pos.getRow());
 	}
 
 	public boolean checkGameObject(String input, String fullName, String shortName) {
 		return input.equalsIgnoreCase(fullName) || input.equalsIgnoreCase(shortName);
+	}
+
+	public boolean checkGameObject(String input) {
+		return checkGameObject(input, "sunflower", "s")
+				|| checkGameObject(input, "peashooter", "p");
 	}
 
 	public boolean tryAddPlant(String plantName, int col, int row) {
@@ -112,8 +115,7 @@ public class Game {
 		if (!isPositionEmpty(col, row)) {
 			throw new IllegalArgumentException(Messages.INVALID_POSITION);
 		}
-		if (!checkGameObject(plantName, "sunflower", "s")
-				&& !checkGameObject(plantName, "peashooter", "p")) {
+		if (!checkGameObject(plantName)) {
 			throw new IllegalArgumentException(Messages.INVALID_GAME_OBJECT);
 		}
 
@@ -143,13 +145,20 @@ public class Game {
 		return col >= 0 && col < NUM_COLS && row >= 0 && row < NUM_ROWS;
 	}
 
+	public boolean isInsideBoard(Position pos) {
+		return isInsideBoard(pos.getCol(), pos.getRow());
+	}
+
 	public boolean isPositionEmpty(int col, int row) {
 		return !this.sunflowers.isPositionOccupied(col, row)
 				&& !this.peashooters.isPositionOccupied(col, row)
 				&& this.zombiesManager.isPositionEmpty(col, row);
 	}
 
-	// Is there a plant or zombie at this position? (used by Zombie to check if it can move)
+	public boolean isEmpty(Position pos) {
+		return isPositionEmpty(pos.getCol(), pos.getRow());
+	}
+
 	public boolean isPositionOccupied(int col, int row) {
 		return this.sunflowers.isPositionOccupied(col, row)
 				|| this.peashooters.isPositionOccupied(col, row)
@@ -166,7 +175,6 @@ public class Game {
 	}
 
 	public void attackPlantInPosition(int col, int row, int damage) {
-		// Try sunflower first, then peashooter
 		this.sunflowers.receiveDamageInPosition(col, row, damage);
 		this.peashooters.receiveDamageInPosition(col, row, damage);
 	}
@@ -177,17 +185,17 @@ public class Game {
 		this.sunCoins += coins;
 	}
 
-	public int getSunCoins() {
+	public int getCoins() {
 		return this.sunCoins;
 	}
 
 	// --- Game state ---
 
-	public int getCycle() {
+	public int getCycles() {
 		return this.cycle;
 	}
 
-	public boolean isFinished() {
+	public boolean hasGameFinished() {
 		return this.playerQuits || this.zombiesWin || this.playerWins;
 	}
 
@@ -199,7 +207,7 @@ public class Game {
 		return this.zombiesWin;
 	}
 
-	public boolean getPlayerQuits() {
+	public boolean playerQuits() {
 		return this.playerQuits;
 	}
 
@@ -221,19 +229,16 @@ public class Game {
 		int col = pos.getCol();
 		int row = pos.getRow();
 
-		// Check sunflower
 		Sunflower s = this.sunflowers.getObjectInPosition(col, row);
 		if (s != null) {
 			return s.getIcon();
 		}
 
-		// Check peashooter
 		Peashooter p = this.peashooters.getObjectInPosition(col, row);
 		if (p != null) {
 			return p.getIcon();
 		}
 
-		// Check zombie
 		String zIcon = this.zombiesManager.getZombieIconInPosition(col, row);
 		if (!zIcon.isEmpty()) {
 			return zIcon;

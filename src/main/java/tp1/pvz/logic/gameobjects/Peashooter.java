@@ -38,6 +38,10 @@ public class Peashooter {
         return this.col == col && this.row == row;
     }
 
+    public boolean isInPosition(Position pos) {
+        return isInPosition(pos.getCol(), pos.getRow());
+    }
+
     public int getCol() {
         return this.col;
     }

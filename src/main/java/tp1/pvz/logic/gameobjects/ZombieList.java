@@ -1,5 +1,7 @@
 package tp1.pvz.logic.gameobjects;
 
+import tp1.pvz.logic.Game;
+
 public class ZombieList {
 
     private static final int MAX_ZOMBIES = 32;
@@ -45,7 +47,7 @@ public class ZombieList {
     // Find the nearest zombie to the right of fromCol in the given row
     public Zombie getNearestZombieInRow(int row, int fromCol) {
         Zombie nearest = null;
-        int nearestCol = Integer.MAX_VALUE;
+        int nearestCol = Game.NUM_COLS;
         for (int i = 0; i < this.count; i++) {
             if (this.zombies[i].getRow() == row
                     && this.zombies[i].getCol() > fromCol

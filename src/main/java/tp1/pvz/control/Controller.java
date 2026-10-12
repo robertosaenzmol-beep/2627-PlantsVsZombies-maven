@@ -30,7 +30,7 @@ public class Controller {
 	public void run() {
 		view.showGame();
 
-		while (!game.isFinished()) {
+		while (!game.hasGameFinished()) {
 			String[] words = view.getPrompt();
 			String command = words[0];
 			boolean cycleAdvanced = false;

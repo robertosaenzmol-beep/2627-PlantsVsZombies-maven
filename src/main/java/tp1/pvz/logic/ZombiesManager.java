@@ -33,15 +33,12 @@ public class ZombiesManager {
 
 	public boolean addZombie() {
 		int row = randomZombieRow();
-		return addZombie(row);
-	}
+		boolean shouldAdd = shouldAddZombie();
 
-	public boolean addZombie(int row) {
-		boolean canAdd = getRemainingZombies() > 0 && shouldAddZombie()
+		boolean canAdd = getRemainingZombies() > 0 && shouldAdd
 				&& isPositionEmpty(Game.NUM_COLS, row);
 
 		if (canAdd) {
-			// Zombies spawn outside the board at column NUM_COLS (one past the last visible column)
 			Zombie z = new Zombie(new Position(row, Game.NUM_COLS), this.game);
 			this.zombies.add(z);
 			this.remainingZombies--;
