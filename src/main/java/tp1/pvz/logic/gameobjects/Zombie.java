@@ -15,63 +15,59 @@ public class Zombie {
     private Game game;
     private int cycleCounter;
 
-    public Zombie(Position pos, Game game) {
+    public Zombie(Position pos, Game game){
         this.col = pos.getCol();
         this.row = pos.getRow();
         this.health = ENDURANCE;
         this.game = game;
-        this.cycleCounter = 0;
+        cycleCounter = 0;
     }
 
     public void update() {
         if (!isAlive()) return;
 
-        int targetCol = this.col - 1;
-        boolean blocked = this.game.isPositionOccupied(targetCol, this.row);
+        int targetCol = col - 1;
+        boolean blocked = game.isPositionOccupied(targetCol, row);
 
         if (blocked) {
-            this.game.attackPlantInPosition(targetCol, this.row, DAMAGE);
+            game.attackPlantInPosition(targetCol, row, DAMAGE);
         } else {
-            if (this.cycleCounter == SPEED) {
-                this.col = targetCol;
-                this.cycleCounter = 0;
-
-                int newTarget = this.col - 1;
-                if (this.game.isPositionOccupied(newTarget, this.row)) {
-                    this.game.attackPlantInPosition(newTarget, this.row, DAMAGE);
+            if (cycleCounter == SPEED) {
+                col = targetCol;
+                cycleCounter = 0;
+                // check if theres a plant in the new position
+                int newTarget = col - 1;
+                if (game.isPositionOccupied(newTarget, row)) {
+                    game.attackPlantInPosition(newTarget, row, DAMAGE);
                 }
             }
-            this.cycleCounter++;
+            cycleCounter++;
         }
     }
 
-    public void receiveAttack(int damage) {
+    public void receiveAttack(int damage){
         this.health -= damage;
     }
 
-    public boolean isAlive() {
-        return this.health > 0;
+    public boolean isAlive(){
+        return health > 0;
     }
 
-    public boolean isInPosition(int col, int row) {
+    public boolean isInPosition(int col, int row){
         return this.col == col && this.row == row;
     }
 
-    public boolean isInPosition(Position pos) {
+    public boolean isInPosition(Position pos){
         return isInPosition(pos.getCol(), pos.getRow());
     }
 
-    public boolean hasReachedEnd() {
-        return this.col < 0;
+    public boolean hasReachedEnd(){
+        return col < 0;
     }
 
-    public int getCol() {
-        return this.col;
-    }
+    public int getCol() { return col; }
 
-    public int getRow() {
-        return this.row;
-    }
+    public int getRow() { return row; }
 
     public String getIcon() {
         return String.format(Messages.ZOMBIE_ICON, this.health);

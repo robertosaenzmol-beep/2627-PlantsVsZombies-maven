@@ -43,32 +43,29 @@ public class Game {
 	// --- Called by the Controller ---
 
 	public void update() {
-		// 1. Game action: try to add a zombie
+		// try to add a zombie
 		this.zombiesManager.addZombie();
 
-		// 2. Update all game objects (order: sunflowers, peashooters, zombies)
+		// update all game objects
 		this.sunflowers.update();
 		this.peashooters.update();
 		this.zombiesManager.update();
 
-		// 3. Remove dead objects
-		this.sunflowers.removeDead();
-		this.peashooters.removeDead();
-		this.zombiesManager.removeDead();
+		// remove dead
+		sunflowers.removeDead();
+		peashooters.removeDead();
+		zombiesManager.removeDead();
 
-		// 4. Check win/lose conditions
-		if (this.zombiesManager.hasZombieReachedEnd()) {
+		// check win/lose
+		if (zombiesManager.hasZombieReachedEnd()) {
 			this.zombiesWin = true;
-		} else if (!this.zombiesManager.hasAliveZombies()
-				&& this.zombiesManager.getRemainingZombies() == 0) {
+		} else if (!zombiesManager.hasAliveZombies()
+				&& zombiesManager.getRemainingZombies() == 0) {
 			this.playerWins = true;
 		}
-
-		// 5. Advance cycle
 		this.cycle++;
 	}
 
-	// --- Plant placement ---
 
 	public boolean addPlant(String plantName, int col, int row) {
 		if (!isInsideBoard(col, row)) {
@@ -95,11 +92,11 @@ public class Game {
 		return false;
 	}
 
-	public boolean addGameObject(String plantName, Position pos) {
+	public boolean addGameObject(String plantName, Position pos){
 		return addPlant(plantName, pos.getCol(), pos.getRow());
 	}
 
-	public boolean checkGameObject(String input, String fullName, String shortName) {
+	public boolean checkGameObject(String input, String fullName, String shortName){
 		return input.equalsIgnoreCase(fullName) || input.equalsIgnoreCase(shortName);
 	}
 
@@ -139,7 +136,7 @@ public class Game {
 		return true;
 	}
 
-	// --- Position checks ---
+	// --- Position checks  ---
 
 	public boolean isInsideBoard(int col, int row) {
 		return col >= 0 && col < NUM_COLS && row >= 0 && row < NUM_ROWS;
@@ -160,26 +157,24 @@ public class Game {
 	}
 
 	public boolean isPositionOccupied(int col, int row) {
-		return this.sunflowers.isPositionOccupied(col, row)
-				|| this.peashooters.isPositionOccupied(col, row)
-				|| this.zombiesManager.isPositionOccupiedByZombie(col, row);
+		return sunflowers.isPositionOccupied(col, row)
+				|| peashooters.isPositionOccupied(col, row)
+				|| zombiesManager.isPositionOccupiedByZombie(col, row);
 	}
 
-	// --- Combat methods (called by game objects) ---
+	// combat methods
 
 	public void attackZombieInRow(int row, int fromCol, int damage) {
-		Zombie z = this.zombiesManager.getNearestZombieInRow(row, fromCol);
-		if (z != null) {
+		Zombie z = zombiesManager.getNearestZombieInRow(row, fromCol);
+		if(z != null) {
 			z.receiveAttack(damage);
 		}
 	}
 
 	public void attackPlantInPosition(int col, int row, int damage) {
-		this.sunflowers.receiveDamageInPosition(col, row, damage);
-		this.peashooters.receiveDamageInPosition(col, row, damage);
+		sunflowers.receiveDamageInPosition(col, row, damage);
+		peashooters.receiveDamageInPosition(col, row, damage);
 	}
-
-	// --- Sun coins ---
 
 	public void addSunCoins(int coins) {
 		this.sunCoins += coins;
@@ -188,8 +183,6 @@ public class Game {
 	public int getCoins() {
 		return this.sunCoins;
 	}
-
-	// --- Game state ---
 
 	public int getCycles() {
 		return this.cycle;
@@ -223,31 +216,21 @@ public class Game {
 		return this.level;
 	}
 
-	// --- Display ---
-
 	public String positionToString(Position pos) {
 		int col = pos.getCol();
 		int row = pos.getRow();
 
-		Sunflower s = this.sunflowers.getObjectInPosition(col, row);
-		if (s != null) {
-			return s.getIcon();
-		}
+		Sunflower s = sunflowers.getObjectInPosition(col, row);
+		if (s != null) return s.getIcon();
 
-		Peashooter p = this.peashooters.getObjectInPosition(col, row);
-		if (p != null) {
-			return p.getIcon();
-		}
+		Peashooter p = peashooters.getObjectInPosition(col, row);
+		if (p != null) return p.getIcon();
 
-		String zIcon = this.zombiesManager.getZombieIconInPosition(col, row);
-		if (!zIcon.isEmpty()) {
-			return zIcon;
-		}
+		String zIcon = zombiesManager.getZombieIconInPosition(col, row);
+		if (!zIcon.isEmpty()) return zIcon;
 
 		return "";
 	}
-
-	// --- Reset ---
 
 	public void reset() {
 		this.cycle = 0;

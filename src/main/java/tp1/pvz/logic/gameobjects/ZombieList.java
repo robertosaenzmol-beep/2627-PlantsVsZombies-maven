@@ -44,8 +44,8 @@ public class ZombieList {
         return null;
     }
 
-    // Find the nearest zombie to the right of fromCol in the given row
-    public Zombie getNearestZombieInRow(int row, int fromCol) {
+    // finds nearest zombie to the right of fromCol in given row
+    public Zombie getNearestZombieInRow(int row, int fromCol){
         Zombie nearest = null;
         int nearestCol = Game.NUM_COLS;
         for (int i = 0; i < this.count; i++) {
@@ -68,11 +68,11 @@ public class ZombieList {
         return false;
     }
 
-    public boolean hasAliveZombies() {
-        return this.count > 0;
+    public boolean hasAliveZombies(){
+        return count > 0;
     }
 
-    public void removeDead() {
+    public void removeDead(){
         int alive = 0;
         for (int i = 0; i < this.count; i++) {
             if (this.zombies[i].isAlive()) {

@@ -18,36 +18,37 @@ public class Sunflower {
     private int cycleCounter;
     private boolean firstCycle;
 
-    public Sunflower(Position pos, Game game) {
+    public Sunflower(Position pos, Game game){
         this.col = pos.getCol();
         this.row = pos.getRow();
         this.health = ENDURANCE;
         this.game = game;
-        this.cycleCounter = 0;
-        this.firstCycle = true;
+        cycleCounter = 0;
+        firstCycle = true;
     }
 
     public void update() {
-        if (!isAlive()) return;
-        if (this.firstCycle) {
-            this.firstCycle = false;
+        if(!isAlive()) return;
+
+        if (firstCycle) {
+            firstCycle = false;
             return;
         }
-        this.cycleCounter++;
-        if (this.cycleCounter % GENERATION_FREQUENCY == 0) {
-            this.game.addSunCoins(SUN_COINS_GENERATED);
+        cycleCounter++;
+        if (cycleCounter % GENERATION_FREQUENCY == 0) {
+            game.addSunCoins(SUN_COINS_GENERATED);
         }
     }
 
-    public void receiveDamage(int damage) {
-        this.health -= damage;
+    public void receiveDamage(int damage){
+        health -= damage;
     }
 
     public boolean isAlive() {
-        return this.health > 0;
+        return health > 0;
     }
 
-    public boolean isInPosition(int col, int row) {
+    public boolean isInPosition(int col, int row){
         return this.col == col && this.row == row;
     }
 
@@ -55,13 +56,9 @@ public class Sunflower {
         return isInPosition(pos.getCol(), pos.getRow());
     }
 
-    public int getCol() {
-        return this.col;
-    }
+    public int getCol() { return col; }
 
-    public int getRow() {
-        return this.row;
-    }
+    public int getRow() { return row; }
 
     public String getIcon() {
         return String.format(Messages.SUNFLOWER_ICON, this.health);

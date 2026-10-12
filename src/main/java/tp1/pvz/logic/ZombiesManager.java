@@ -15,79 +15,73 @@ public class ZombiesManager {
 	private int remainingZombies;
 	private ZombieList zombies;
 
-	public ZombiesManager(Game game, Level level, Random rand) {
+	public ZombiesManager(Game game, Level level, Random rand){
 		this.game = game;
 		this.level = level;
 		this.rand = rand;
-		this.remainingZombies = level.getNumberOfZombies();
-		this.zombies = new ZombieList();
+		remainingZombies = level.getNumberOfZombies();
+		zombies = new ZombieList();
 	}
 
-	private boolean shouldAddZombie() {
+	private boolean shouldAddZombie(){
 		return rand.nextDouble() < level.getZombieFrequency();
 	}
 
-	private int randomZombieRow() {
+	private int randomZombieRow(){
 		return rand.nextInt(Game.NUM_ROWS);
 	}
 
 	public boolean addZombie() {
+		// always call both random methods to keep seed in sync
 		int row = randomZombieRow();
 		boolean shouldAdd = shouldAddZombie();
 
-		boolean canAdd = getRemainingZombies() > 0 && shouldAdd
+		boolean canAdd = getRemainingZombies() > 0  && shouldAdd
 				&& isPositionEmpty(Game.NUM_COLS, row);
-
 		if (canAdd) {
-			Zombie z = new Zombie(new Position(row, Game.NUM_COLS), this.game);
-			this.zombies.add(z);
-			this.remainingZombies--;
+			Zombie z = new Zombie(new Position(row, Game.NUM_COLS), game);
+			zombies.add(z);
+			remainingZombies--;
 		}
 		return canAdd;
 	}
 
 	public int getRemainingZombies() {
-		return this.remainingZombies;
+		return remainingZombies;
 	}
 
-	public boolean isPositionEmpty(int col, int row) {
-		return !this.zombies.isPositionOccupied(col, row);
+	public boolean isPositionEmpty(int col, int row){
+		return !zombies.isPositionOccupied(col, row);
 	}
 
-	public void update() {
-		this.zombies.update();
-	}
+	public void update() { zombies.update(); }
 
-	public void removeDead() {
-		this.zombies.removeDead();
-	}
+	public void removeDead() { zombies.removeDead(); }
 
 	public boolean hasZombieReachedEnd() {
-		return this.zombies.hasZombieReachedEnd();
+		return zombies.hasZombieReachedEnd();
 	}
 
-	public boolean hasAliveZombies() {
-		return this.zombies.hasAliveZombies();
+	public boolean hasAliveZombies(){
+		return zombies.hasAliveZombies();
 	}
 
 	public Zombie getNearestZombieInRow(int row, int fromCol) {
-		return this.zombies.getNearestZombieInRow(row, fromCol);
+		return zombies.getNearestZombieInRow(row, fromCol);
 	}
 
-	public boolean isPositionOccupiedByZombie(int col, int row) {
-		return this.zombies.isPositionOccupied(col, row);
+	public boolean isPositionOccupiedByZombie(int col, int row){
+		return zombies.isPositionOccupied(col, row);
 	}
 
 	public String getZombieIconInPosition(int col, int row) {
-		Zombie z = this.zombies.getObjectInPosition(col, row);
-		if (z != null) {
-			return z.getIcon();
-		}
+		Zombie z = zombies.getObjectInPosition(col, row);
+		if(z != null) return z.getIcon();
 		return "";
 	}
 
-	public void reset() {
-		this.remainingZombies = this.level.getNumberOfZombies();
-		this.zombies.reset();
+	public void reset(){
+		remainingZombies = level.getNumberOfZombies();
+		zombies.reset();
 	}
 }

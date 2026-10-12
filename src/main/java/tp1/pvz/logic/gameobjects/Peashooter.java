@@ -14,41 +14,36 @@ public class Peashooter {
     private int health;
     private Game game;
 
-    public Peashooter(Position pos, Game game) {
+    public Peashooter(Position pos, Game game){
         this.col = pos.getCol();
         this.row = pos.getRow();
-        this.health = ENDURANCE;
+        health = ENDURANCE;
         this.game = game;
     }
 
     public void update() {
-        // Shoots the nearest zombie to its right in the same row
-        this.game.attackZombieInRow(this.row, this.col, DAMAGE);
+        game.attackZombieInRow(row, col, DAMAGE);
     }
 
     public void receiveDamage(int damage) {
-        this.health -= damage;
+        health -= damage;
     }
 
-    public boolean isAlive() {
-        return this.health > 0;
+    public boolean isAlive(){
+        return health > 0;
     }
 
     public boolean isInPosition(int col, int row) {
-        return this.col == col && this.row == row;
+        return this.col == col  && this.row == row;
     }
 
-    public boolean isInPosition(Position pos) {
+    public boolean isInPosition(Position pos){
         return isInPosition(pos.getCol(), pos.getRow());
     }
 
-    public int getCol() {
-        return this.col;
-    }
+    public int getCol() { return col; }
 
-    public int getRow() {
-        return this.row;
-    }
+    public int getRow() { return row; }
 
     public String getIcon() {
         return String.format(Messages.PEASHOOTER_ICON, this.health);
