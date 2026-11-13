@@ -1,6 +1,7 @@
 package tp1.pvz.logic.gameobjects;
 
-import tp1.pvz.logic.Game;
+import tp1.pvz.logic.GameWorld;
+import tp1.pvz.utils.Position;
 
 public class ZombieList {
 
@@ -17,6 +18,7 @@ public class ZombieList {
         if (this.count < MAX_ZOMBIES) {
             this.zombies[this.count] = z;
             this.count++;
+            z.onEnter();
         }
     }
 
@@ -26,34 +28,30 @@ public class ZombieList {
         }
     }
 
-    public boolean isPositionOccupied(int col, int row) {
-        for (int i = 0; i < this.count; i++) {
-            if (this.zombies[i].isInPosition(col, row)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isPositionOccupied(Position position) {
+        return getObjectInPosition(position) != null;
     }
 
-    public Zombie getObjectInPosition(int col, int row) {
+    public Zombie getObjectInPosition(Position position) {
         for (int i = 0; i < this.count; i++) {
-            if (this.zombies[i].isInPosition(col, row)) {
+            if (this.zombies[i].isInPosition(position)) {
                 return this.zombies[i];
             }
         }
         return null;
     }
 
-    // finds nearest zombie to the right of fromCol in given row
-    public Zombie getNearestZombieInRow(int row, int fromCol){
+    // finds nearest zombie to the right of 'from' in the same row
+    public Zombie getNearestZombieInRow(Position from) {
         Zombie nearest = null;
-        int nearestCol = Game.NUM_COLS;
+        int nearestCol = GameWorld.NUM_COLS;
         for (int i = 0; i < this.count; i++) {
-            if (this.zombies[i].getRow() == row
-                    && this.zombies[i].getCol() > fromCol
-                    && this.zombies[i].getCol() < nearestCol) {
+            Position zp = this.zombies[i].getPosition();
+            if (zp.getRow() == from.getRow()
+                    && zp.getCol() > from.getCol()
+                    && zp.getCol() < nearestCol) {
                 nearest = this.zombies[i];
-                nearestCol = this.zombies[i].getCol();
+                nearestCol = zp.getCol();
             }
         }
         return nearest;
@@ -78,6 +76,8 @@ public class ZombieList {
             if (this.zombies[i].isAlive()) {
                 this.zombies[alive] = this.zombies[i];
                 alive++;
+            } else {
+                this.zombies[i].onExit();
             }
         }
         for (int i = alive; i < this.count; i++) {

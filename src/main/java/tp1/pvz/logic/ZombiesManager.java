@@ -9,13 +9,13 @@ import tp1.pvz.utils.Position;
 
 public class ZombiesManager {
 
-	private Game game;
+	private GameWorld game;
 	private Level level;
 	private Random rand;
 	private int remainingZombies;
 	private ZombieList zombies;
 
-	public ZombiesManager(Game game, Level level, Random rand){
+	public ZombiesManager(GameWorld game, Level level, Random rand){
 		this.game = game;
 		this.level = level;
 		this.rand = rand;
@@ -28,18 +28,18 @@ public class ZombiesManager {
 	}
 
 	private int randomZombieRow(){
-		return rand.nextInt(Game.NUM_ROWS);
+		return rand.nextInt(GameWorld.NUM_ROWS);
 	}
 
 	public boolean addZombie() {
-		// always call both random methods to keep seed in sync
 		int row = randomZombieRow();
 		boolean shouldAdd = shouldAddZombie();
 
+		Position position = new Position(row, GameWorld.NUM_COLS);
 		boolean canAdd = getRemainingZombies() > 0  && shouldAdd
-				&& isPositionEmpty(Game.NUM_COLS, row);
+				&& isPositionEmpty(position);
 		if (canAdd) {
-			Zombie z = new Zombie(new Position(row, Game.NUM_COLS), game);
+			Zombie z = new Zombie(position, game);
 			zombies.add(z);
 			remainingZombies--;
 		}
@@ -50,8 +50,8 @@ public class ZombiesManager {
 		return remainingZombies;
 	}
 
-	public boolean isPositionEmpty(int col, int row){
-		return !zombies.isPositionOccupied(col, row);
+	public boolean isPositionEmpty(Position position){
+		return !zombies.isPositionOccupied(position);
 	}
 
 	public void update() { zombies.update(); }
@@ -66,16 +66,12 @@ public class ZombiesManager {
 		return zombies.hasAliveZombies();
 	}
 
-	public Zombie getNearestZombieInRow(int row, int fromCol) {
-		return zombies.getNearestZombieInRow(row, fromCol);
+	public Zombie getNearestZombieInRow(Position from) {
+		return zombies.getNearestZombieInRow(from);
 	}
 
-	public boolean isPositionOccupiedByZombie(int col, int row){
-		return zombies.isPositionOccupied(col, row);
-	}
-
-	public String getZombieIconInPosition(int col, int row) {
-		Zombie z = zombies.getObjectInPosition(col, row);
+	public String getZombieIconInPosition(Position position) {
+		Zombie z = zombies.getObjectInPosition(position);
 		if(z != null) return z.getIcon();
 		return "";
 	}

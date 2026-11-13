@@ -1,6 +1,8 @@
 package tp1.pvz.control;
 
+import tp1.pvz.control.command.Command;
 import tp1.pvz.logic.Game;
+import tp1.pvz.logic.GameModel;
 import tp1.pvz.view.GamePrinter;
 import tp1.pvz.view.GameView;
 import tp1.pvz.view.Messages;
@@ -16,7 +18,7 @@ import tp1.pvz.view.Messages;
  */
 public class Controller {
 
-	private final Game game;
+	private final GameModel game;
 	private final GameView view;
 
 	public Controller(Game game) {
@@ -32,44 +34,13 @@ public class Controller {
 
 		while (!game.hasGameFinished()) {
 			String[] words = view.getPrompt();
-			String command = words[0];
-			boolean cycleAdvanced = false;
-
-			if (command.equals("help") || command.equals("h")) {
-				view.showMessage(Messages.HELP);
-			} else if (command.equals("list") || command.equals("l")) {
-				view.showMessage(Messages.LIST);
-			} else if (command.equals("reset") || command.equals("r")) {
-				game.reset();
-				cycleAdvanced = true;
-			} else if (command.equals("exit") || command.equals("e")) {
-				game.quit();
-			} else if (command.equals("none") || command.equals("n") || command.equals("")) {
-				game.update();
-				cycleAdvanced = true;
-			} else if (command.equals("add") || command.equals("a")) {
-				if (words.length < 4) {
-					view.showError(Messages.COMMAND_PARAMETERS_MISSING);
-				} else {
-					String plantName = words[1];
-					try {
-						int col = Integer.parseInt(words[2]);
-						int row = Integer.parseInt(words[3]);
-						game.tryAddPlant(plantName, col, row);
-						game.update();
-						cycleAdvanced = true;
-					} catch (NumberFormatException e) {
-						view.showError(Messages.INVALID_POSITION);
-					} catch (IllegalArgumentException e) {
-						view.showError(e.getMessage());
-					}
-				}
+			// buscamos qué comando ha escrito el usuario
+			Command command = Command.parse(words);
+			if (command != null) {
+				// cada comando sabe qué hacer y si tiene que repintar
+				command.execute(game, view);
 			} else {
 				view.showError(Messages.UNKNOWN_COMMAND);
-			}
-
-			if (cycleAdvanced) {
-				view.showGame();
 			}
 		}
 

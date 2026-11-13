@@ -1,5 +1,7 @@
 package tp1.pvz.logic.gameobjects;
 
+import tp1.pvz.utils.Position;
+
 public class SunflowerList {
 
     private static final int MAX_SUNFLOWERS = 32;
@@ -15,6 +17,7 @@ public class SunflowerList {
         if (this.count < MAX_SUNFLOWERS) {
             this.sunflowers[this.count] = s;
             this.count++;
+            s.onEnter();
         }
     }
 
@@ -24,26 +27,21 @@ public class SunflowerList {
         }
     }
 
-    public boolean isPositionOccupied(int col, int row) {
-        for (int i = 0; i < this.count; i++) {
-            if (this.sunflowers[i].isInPosition(col, row)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isPositionOccupied(Position position) {
+        return getObjectInPosition(position) != null;
     }
 
-    public Sunflower getObjectInPosition(int col, int row) {
+    public Sunflower getObjectInPosition(Position position) {
         for (int i = 0; i < this.count; i++) {
-            if (this.sunflowers[i].isInPosition(col, row)) {
+            if (this.sunflowers[i].isInPosition(position)) {
                 return this.sunflowers[i];
             }
         }
         return null;
     }
 
-    public void receiveDamageInPosition(int col, int row, int damage) {
-        Sunflower s = getObjectInPosition(col, row);
+    public void receiveDamageInPosition(Position position, int damage) {
+        Sunflower s = getObjectInPosition(position);
         if (s != null) {
             s.receiveDamage(damage);
         }
@@ -55,9 +53,10 @@ public class SunflowerList {
             if (this.sunflowers[i].isAlive()) {
                 this.sunflowers[alive] = this.sunflowers[i];
                 alive++;
+            } else {
+                this.sunflowers[i].onExit();
             }
         }
-        // Clear leftover references
         for (int i = alive; i < this.count; i++) {
             this.sunflowers[i] = null;
         }

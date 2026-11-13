@@ -55,6 +55,8 @@ public class Messages {
 			"[n]one | \"\": skips cycle",
 	};
 	
+	public static final String HELP_HEADER = "Available commands:";
+
 	public static final String HELP = String.join(System.lineSeparator(), HELP_LINES);
 
 	public static final String UNKNOWN_COMMAND = "Unknown command";
@@ -65,7 +67,9 @@ public class Messages {
 
 	public static final String INVALID_GAME_OBJECT = String.format("Invalid object%n");
 	
-	public static final String LIST = "%s%n%s%n".formatted(Sunflower.getDescription(), Peashooter.getDescription()); 	
+	public static final String LIST = "%s%n%s%n".formatted(
+			Messages.SUNFLOWER_DESCRIPTION.formatted(Sunflower.COST, Sunflower.DAMAGE, Sunflower.ENDURANCE),
+			Messages.PEASHOOTER_DESCRIPTION.formatted(Peashooter.COST, Peashooter.DAMAGE, Peashooter.ENDURANCE));
 
 	public static final String INVALID_COMMAND = "Invalid command";
 	
@@ -86,6 +90,8 @@ public class Messages {
 	public static final String REMAINING_ZOMBIES = "Remaining zombies: %d%n";
 
 	public static final String ZOMBIE_ICON = " Z[%02d]";
+
+	public static final String ZOMBIE_DESCRIPTION = "Zombie: speed='%d', damage='%d', endurance='%d'";
 	
 	public static final String GAME_OVER = "Game over";
 

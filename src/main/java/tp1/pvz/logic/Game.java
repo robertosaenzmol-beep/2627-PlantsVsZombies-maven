@@ -7,10 +7,17 @@ import tp1.pvz.logic.gameobjects.*;
 import tp1.pvz.utils.Position;
 import tp1.pvz.view.Messages;
 
-public class Game {
+/**
+ * Clase principal de la lógica del juego. Se usa desde distintas partes de la
+ * aplicación, pero cada una la ve a través de la interfaz que le corresponde:
+ * <ul>
+ * <li>{@link GameStatus}: la vista (GamePrinter) para pintar el estado.</li>
+ * <li>{@link GameWorld}: los objetos del juego para interactuar con el mundo.</li>
+ * <li>{@link GameModel}: el controlador para alterar la partida.</li>
+ * </ul>
+ */
+public class Game implements GameStatus, GameWorld, GameModel {
 
-	public static final int NUM_ROWS = 4;
-	public static final int NUM_COLS = 8;
 	public static final int INITIAL_COINS = 50;
 
 	private int cycle;
@@ -40,8 +47,9 @@ public class Game {
 		this.zombiesManager = new ZombiesManager(this, level, this.rand);
 	}
 
-	// --- Called by the Controller ---
+	// --- GameModel: alter the state of the game ---
 
+	@Override
 	public void update() {
 		// try to add a zombie
 		this.zombiesManager.addZombie();
@@ -65,7 +73,6 @@ public class Game {
 		}
 		this.cycle++;
 	}
-
 
 	public boolean addPlant(String plantName, int col, int row) {
 		if (!isInsideBoard(col, row)) {
@@ -105,6 +112,7 @@ public class Game {
 				|| checkGameObject(input, "peashooter", "p");
 	}
 
+	@Override
 	public boolean tryAddPlant(String plantName, int col, int row) {
 		if (!isInsideBoard(col, row)) {
 			throw new IllegalArgumentException(Messages.INVALID_POSITION);
@@ -136,102 +144,12 @@ public class Game {
 		return true;
 	}
 
-	// --- Position checks  ---
-
-	public boolean isInsideBoard(int col, int row) {
-		return col >= 0 && col < NUM_COLS && row >= 0 && row < NUM_ROWS;
-	}
-
-	public boolean isInsideBoard(Position pos) {
-		return isInsideBoard(pos.getCol(), pos.getRow());
-	}
-
-	public boolean isPositionEmpty(int col, int row) {
-		return !this.sunflowers.isPositionOccupied(col, row)
-				&& !this.peashooters.isPositionOccupied(col, row)
-				&& this.zombiesManager.isPositionEmpty(col, row);
-	}
-
-	public boolean isEmpty(Position pos) {
-		return isPositionEmpty(pos.getCol(), pos.getRow());
-	}
-
-	public boolean isPositionOccupied(int col, int row) {
-		return sunflowers.isPositionOccupied(col, row)
-				|| peashooters.isPositionOccupied(col, row)
-				|| zombiesManager.isPositionOccupiedByZombie(col, row);
-	}
-
-	// combat methods
-
-	public void attackZombieInRow(int row, int fromCol, int damage) {
-		Zombie z = zombiesManager.getNearestZombieInRow(row, fromCol);
-		if(z != null) {
-			z.receiveAttack(damage);
-		}
-	}
-
-	public void attackPlantInPosition(int col, int row, int damage) {
-		sunflowers.receiveDamageInPosition(col, row, damage);
-		peashooters.receiveDamageInPosition(col, row, damage);
-	}
-
-	public void addSunCoins(int coins) {
-		this.sunCoins += coins;
-	}
-
-	public int getCoins() {
-		return this.sunCoins;
-	}
-
-	public int getCycles() {
-		return this.cycle;
-	}
-
-	public boolean hasGameFinished() {
-		return this.playerQuits || this.zombiesWin || this.playerWins;
-	}
-
-	public boolean getPlayerWins() {
-		return this.playerWins;
-	}
-
-	public boolean getZombiesWin() {
-		return this.zombiesWin;
-	}
-
-	public boolean playerQuits() {
-		return this.playerQuits;
-	}
-
+	@Override
 	public void quit() {
 		this.playerQuits = true;
 	}
 
-	public int getRemainingZombies() {
-		return this.zombiesManager.getRemainingZombies();
-	}
-
-	public Level getLevel() {
-		return this.level;
-	}
-
-	public String positionToString(Position pos) {
-		int col = pos.getCol();
-		int row = pos.getRow();
-
-		Sunflower s = sunflowers.getObjectInPosition(col, row);
-		if (s != null) return s.getIcon();
-
-		Peashooter p = peashooters.getObjectInPosition(col, row);
-		if (p != null) return p.getIcon();
-
-		String zIcon = zombiesManager.getZombieIconInPosition(col, row);
-		if (!zIcon.isEmpty()) return zIcon;
-
-		return "";
-	}
-
+	@Override
 	public void reset() {
 		this.cycle = 0;
 		this.sunCoins = INITIAL_COINS;
@@ -242,5 +160,104 @@ public class Game {
 		this.sunflowers.reset();
 		this.peashooters.reset();
 		this.zombiesManager = new ZombiesManager(this, this.level, this.rand);
+	}
+
+	@Override
+	public boolean hasGameFinished() {
+		return this.playerQuits || this.zombiesWin || this.playerWins;
+	}
+
+	// --- GameWorld: what the game objects need ---
+
+	@Override
+	public boolean isInsideBoard(Position pos) {
+		return isInsideBoard(pos.getCol(), pos.getRow());
+	}
+
+	@Override
+	public boolean isEmpty(Position pos) {
+		return isPositionEmpty(pos.getCol(), pos.getRow());
+	}
+
+	@Override
+	public void addSunCoins(int coins) {
+		this.sunCoins += coins;
+	}
+
+	@Override
+	public void attackZombieInRow(Position from, int damage) {
+		Zombie z = zombiesManager.getNearestZombieInRow(from);
+		if (z != null) {
+			z.receiveDamage(damage);
+		}
+	}
+
+	@Override
+	public void attackPlantInPosition(Position position, int damage) {
+		sunflowers.receiveDamageInPosition(position, damage);
+		peashooters.receiveDamageInPosition(position, damage);
+	}
+
+	// --- GameStatus: what the view needs ---
+
+	@Override
+	public int getCycles() {
+		return this.cycle;
+	}
+
+	@Override
+	public int getCoins() {
+		return this.sunCoins;
+	}
+
+	@Override
+	public int getRemainingZombies() {
+		return this.zombiesManager.getRemainingZombies();
+	}
+
+	@Override
+	public boolean getPlayerWins() {
+		return this.playerWins;
+	}
+
+	@Override
+	public boolean getZombiesWin() {
+		return this.zombiesWin;
+	}
+
+	@Override
+	public boolean playerQuits() {
+		return this.playerQuits;
+	}
+
+	@Override
+	public String positionToString(Position pos) {
+		Sunflower s = sunflowers.getObjectInPosition(pos);
+		if (s != null) return s.getIcon();
+
+		Peashooter p = peashooters.getObjectInPosition(pos);
+		if (p != null) return p.getIcon();
+
+		String zIcon = zombiesManager.getZombieIconInPosition(pos);
+		if (!zIcon.isEmpty()) return zIcon;
+
+		return "";
+	}
+
+	// --- Helpers ---
+
+	public boolean isInsideBoard(int col, int row) {
+		return col >= 0 && col < NUM_COLS && row >= 0 && row < NUM_ROWS;
+	}
+
+	public boolean isPositionEmpty(int col, int row) {
+		Position pos = new Position(row, col);
+		return !this.sunflowers.isPositionOccupied(pos)
+				&& !this.peashooters.isPositionOccupied(pos)
+				&& this.zombiesManager.isPositionEmpty(pos);
+	}
+
+	public Level getLevel() {
+		return this.level;
 	}
 }

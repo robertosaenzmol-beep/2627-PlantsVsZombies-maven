@@ -1,5 +1,7 @@
 package tp1.pvz.logic.gameobjects;
 
+import tp1.pvz.utils.Position;
+
 public class PeashooterList {
 
     private static final int MAX_PEASHOOTERS = 32;
@@ -15,6 +17,7 @@ public class PeashooterList {
         if (this.count < MAX_PEASHOOTERS) {
             this.peashooters[this.count] = p;
             this.count++;
+            p.onEnter();
         }
     }
 
@@ -24,26 +27,21 @@ public class PeashooterList {
         }
     }
 
-    public boolean isPositionOccupied(int col, int row) {
-        for (int i = 0; i < this.count; i++) {
-            if (this.peashooters[i].isInPosition(col, row)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isPositionOccupied(Position position) {
+        return getObjectInPosition(position) != null;
     }
 
-    public Peashooter getObjectInPosition(int col, int row) {
+    public Peashooter getObjectInPosition(Position position) {
         for (int i = 0; i < this.count; i++) {
-            if (this.peashooters[i].isInPosition(col, row)) {
+            if (this.peashooters[i].isInPosition(position)) {
                 return this.peashooters[i];
             }
         }
         return null;
     }
 
-    public void receiveDamageInPosition(int col, int row, int damage) {
-        Peashooter p = getObjectInPosition(col, row);
+    public void receiveDamageInPosition(Position position, int damage) {
+        Peashooter p = getObjectInPosition(position);
         if (p != null) {
             p.receiveDamage(damage);
         }
@@ -55,6 +53,8 @@ public class PeashooterList {
             if (this.peashooters[i].isAlive()) {
                 this.peashooters[alive] = this.peashooters[i];
                 alive++;
+            } else {
+                this.peashooters[i].onExit();
             }
         }
         for (int i = alive; i < this.count; i++) {

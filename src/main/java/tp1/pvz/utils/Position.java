@@ -16,4 +16,22 @@ public class Position {
     public int getRow() {
         return this.row;
     }
+
+    /** Dos posiciones son iguales si tienen la misma fila y la misma columna. */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Position other = (Position) obj;
+        return this.row == other.row && this.col == other.col;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * row + col;
+    }
 }

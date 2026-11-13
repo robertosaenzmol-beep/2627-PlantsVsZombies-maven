@@ -4,7 +4,8 @@ import static tp1.pvz.view.Messages.PROMPT;
 import static tp1.pvz.view.Messages.debug;
 import static tp1.pvz.view.Messages.error;
 
-import tp1.pvz.logic.Game;
+import tp1.pvz.logic.GameStatus;
+import tp1.pvz.logic.GameWorld;
 import tp1.pvz.utils.Position;
 import tp1.pvz.utils.StringUtils;
 
@@ -18,8 +19,8 @@ import java.util.Scanner;
  * Also produces the end-of-game message distinguishing player win, player quit,
  * and zombie win outcomes.
  *
- * <p>This class is read-only with respect to {@link Game}: it queries game state
- * through the public API and never modifies it. All string literals and format
+ * <p>This class is read-only with respect to the game: it queries game state
+ * through the {@link GameStatus} interface and never modifies it. All string literals and format
  * templates are sourced from {@link Messages}.
  */
 public class GamePrinter implements GameView {
@@ -40,14 +41,14 @@ public class GamePrinter implements GameView {
 
 	private static final String CELL_BORDER = StringUtils.repeat(CELL_BORDER_CHAR, CELL_SIZE);
 
-	private static final String ROW_BORDER = SPACE + StringUtils.repeat(CELL_BORDER + SPACE, Game.NUM_COLS);
+	private static final String ROW_BORDER = SPACE + StringUtils.repeat(CELL_BORDER + SPACE, GameWorld.NUM_COLS);
 
 	private static final String INDENTED_ROW_BORDER = String.format("%n%s%s%n", MARGIN, ROW_BORDER);
 
-	private Game game;
+	private GameStatus game;
 	private Scanner scanner;
 
-	public GamePrinter(Game game) {
+	public GamePrinter(GameStatus game) {
 		this.game = game;
 		this.scanner = new Scanner(System.in);
 	}
@@ -80,9 +81,9 @@ public class GamePrinter implements GameView {
 		// Paint game board
 		str.append(INDENTED_ROW_BORDER);
 
-		for (int row = 0; row < Game.NUM_ROWS; row++) {
+		for (int row = 0; row < GameWorld.NUM_ROWS; row++) {
 			str.append(MARGIN).append(VERTICAL_DELIMITER);
-			for (int col = 0; col < Game.NUM_COLS; col++) {
+			for (int col = 0; col < GameWorld.NUM_COLS; col++) {
 				str.append(StringUtils.centre(game.positionToString(new Position(row, col)), CELL_SIZE)).append(VERTICAL_DELIMITER);
 			}
 			str.append(INDENTED_ROW_BORDER);

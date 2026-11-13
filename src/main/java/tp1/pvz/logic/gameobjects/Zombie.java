@@ -1,75 +1,70 @@
 package tp1.pvz.logic.gameobjects;
 
-import tp1.pvz.logic.Game;
+import tp1.pvz.logic.GameWorld;
 import tp1.pvz.utils.Position;
 import tp1.pvz.view.Messages;
 
-public class Zombie {
+public class Zombie extends GameObject {
     public static final int DAMAGE = 1;
     public static final int ENDURANCE = 5;
     private static final int SPEED = 2;
 
-    private int col;
-    private int row;
-    private int health;
-    private Game game;
     private int cycleCounter;
 
-    public Zombie(Position pos, Game game){
-        this.col = pos.getCol();
-        this.row = pos.getRow();
-        this.health = ENDURANCE;
-        this.game = game;
+    public Zombie(Position pos, GameWorld game) {
+        super(game, pos, ENDURANCE);
         cycleCounter = 0;
     }
 
+    @Override
+    public void onEnter() {
+    }
+
+    @Override
     public void update() {
         if (!isAlive()) return;
 
-        int targetCol = col - 1;
-        boolean blocked = game.isPositionOccupied(targetCol, row);
+        Position target = new Position(position.getRow(), position.getCol() - 1);
+        boolean blocked = !game.isEmpty(target);
 
         if (blocked) {
-            game.attackPlantInPosition(targetCol, row, DAMAGE);
+            game.attackPlantInPosition(target, DAMAGE);
         } else {
             if (cycleCounter == SPEED) {
-                col = targetCol;
+                position = target;
                 cycleCounter = 0;
                 // check if theres a plant in the new position
-                int newTarget = col - 1;
-                if (game.isPositionOccupied(newTarget, row)) {
-                    game.attackPlantInPosition(newTarget, row, DAMAGE);
+                Position newTarget = new Position(position.getRow(), position.getCol() - 1);
+                if (!game.isEmpty(newTarget)) {
+                    game.attackPlantInPosition(newTarget, DAMAGE);
                 }
             }
             cycleCounter++;
         }
     }
 
-    public void receiveAttack(int damage){
-        this.health -= damage;
+    @Override
+    public void onExit() {
     }
 
-    public boolean isAlive(){
-        return health > 0;
+
+
+    // los tests usan este nombre; el daño se resta igual que en cualquier objeto
+    public void receiveAttack(int damage) {
+        receiveDamage(damage);
     }
 
-    public boolean isInPosition(int col, int row){
-        return this.col == col && this.row == row;
+    public boolean hasReachedEnd() {
+        return position.getCol() < 0;
     }
 
-    public boolean isInPosition(Position pos){
-        return isInPosition(pos.getCol(), pos.getRow());
-    }
-
-    public boolean hasReachedEnd(){
-        return col < 0;
-    }
-
-    public int getCol() { return col; }
-
-    public int getRow() { return row; }
-
+    @Override
     public String getIcon() {
         return String.format(Messages.ZOMBIE_ICON, this.health);
+    }
+
+    @Override
+    public String getDescription() {
+        return String.format(Messages.ZOMBIE_DESCRIPTION, SPEED, DAMAGE, ENDURANCE);
     }
 }
